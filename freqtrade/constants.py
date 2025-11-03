@@ -41,6 +41,18 @@ HYPEROPT_LOSS_BUILTIN = [
     "ProfitDrawDownHyperOptLoss",
     "MultiMetricHyperOptLoss",
 ]
+HYPEROPT_BUILTIN_SPACES = [
+    "all",
+    "buy",
+    "sell",
+    "roi",
+    "stoploss",
+    "trailing",
+    "protection",
+    "trades",
+    "default",
+]
+
 AVAILABLE_PAIRLISTS = [
     "StaticPairList",
     "VolumePairList",
@@ -61,7 +73,7 @@ AVAILABLE_PAIRLISTS = [
     "VolatilityFilter",
 ]
 AVAILABLE_DATAHANDLERS = ["json", "jsongz", "feather", "parquet"]
-BACKTEST_BREAKDOWNS = ["day", "week", "month", "year"]
+BACKTEST_BREAKDOWNS = ["day", "week", "month", "year", "weekday"]
 BACKTEST_CACHE_AGE = ["none", "day", "week", "month"]
 BACKTEST_CACHE_DEFAULT = "day"
 DRY_RUN_WALLET = 1000

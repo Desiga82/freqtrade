@@ -300,7 +300,7 @@ class Exchange:
 
         if self.trading_mode != TradingMode.SPOT and load_leverage_tiers:
             self.fill_leverage_tiers()
-        self.additional_exchange_init()
+        self.ft_additional_exchange_init()
 
     def __del__(self):
         """
@@ -454,6 +454,12 @@ class Exchange:
         Might need to be updated if https://github.com/ccxt/ccxt/issues/20408 is fixed.
         """
         return self._api.precisionMode
+
+    def ft_additional_exchange_init(self) -> None:
+        """
+        Wrapper around additional_exchange_init to simplify testing
+        """
+        self.additional_exchange_init()
 
     def additional_exchange_init(self) -> None:
         """
@@ -885,6 +891,7 @@ class Exchange:
         self,
         trading_mode: TradingMode,
         margin_mode: MarginMode | None,  # Only None when trading_mode = TradingMode.SPOT
+        allow_none_margin_mode: bool = False,
     ):
         """
         Checks if freqtrade can perform trades using the configured
@@ -892,7 +899,18 @@ class Exchange:
         Throws OperationalException:
             If the trading_mode/margin_mode type are not supported by freqtrade on this exchange
         """
-        if trading_mode != TradingMode.SPOT and (
+        if trading_mode == TradingMode.SPOT:
+            return
+        if allow_none_margin_mode and margin_mode is None:
+            # Verify trading mode independent of margin mode
+            if not any(
+                trading_mode == pair[0] for pair in self._supported_trading_mode_margin_pairs
+            ):
+                raise ConfigurationError(
+                    f"Freqtrade does not support '{trading_mode}' on {self.name}."
+                )
+
+        if not allow_none_margin_mode and (
             (trading_mode, margin_mode) not in self._supported_trading_mode_margin_pairs
         ):
             mm_value = margin_mode and margin_mode.value

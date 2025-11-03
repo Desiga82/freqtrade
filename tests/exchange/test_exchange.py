@@ -170,7 +170,7 @@ def test_init(default_conf, mocker, caplog):
 def test_init_ccxt_kwargs(default_conf, mocker, caplog):
     mocker.patch(f"{EXMS}.reload_markets")
     mocker.patch(f"{EXMS}.validate_stakecurrency")
-    aei_mock = mocker.patch(f"{EXMS}.additional_exchange_init")
+    aei_mock = mocker.patch(f"{EXMS}.ft_additional_exchange_init")
 
     caplog.set_level(logging.INFO)
     conf = copy.deepcopy(default_conf)
@@ -2176,10 +2176,7 @@ def test_get_historic_ohlcv(default_conf, mocker, caplog, exchange_name, candle_
     since = date_minus_candles("5m", candle_limit)
     ret = exchange.get_historic_ohlcv(pair, "5m", dt_ts(since), candle_type=candle_type)
 
-    if exchange_name == "okx" and candle_type == "mark":
-        expected = 4
-    else:
-        expected = 2
+    expected = 2
     assert exchange._async_get_candle_history.call_count == expected
     # Returns twice the above OHLCV data after truncating the open candle.
     assert len(ret) == expected
@@ -4900,53 +4897,66 @@ def test_set_margin_mode(mocker, default_conf, margin_mode):
 
 
 @pytest.mark.parametrize(
-    "exchange_name, trading_mode, margin_mode, exception_thrown",
+    "exchange_name, trading_mode, margin_mode, allow_none_margin_mode, exception_thrown",
     [
-        ("binance", TradingMode.SPOT, None, False),
-        ("binance", TradingMode.MARGIN, MarginMode.ISOLATED, True),
-        ("kraken", TradingMode.SPOT, None, False),
-        ("kraken", TradingMode.MARGIN, MarginMode.ISOLATED, True),
-        ("kraken", TradingMode.FUTURES, MarginMode.ISOLATED, True),
-        ("bitmart", TradingMode.SPOT, None, False),
-        ("bitmart", TradingMode.MARGIN, MarginMode.CROSS, True),
-        ("bitmart", TradingMode.MARGIN, MarginMode.ISOLATED, True),
-        ("bitmart", TradingMode.FUTURES, MarginMode.CROSS, True),
-        ("bitmart", TradingMode.FUTURES, MarginMode.ISOLATED, True),
-        ("gate", TradingMode.MARGIN, MarginMode.ISOLATED, True),
-        ("okx", TradingMode.SPOT, None, False),
-        ("okx", TradingMode.MARGIN, MarginMode.CROSS, True),
-        ("okx", TradingMode.MARGIN, MarginMode.ISOLATED, True),
-        ("okx", TradingMode.FUTURES, MarginMode.CROSS, True),
-        ("binance", TradingMode.FUTURES, MarginMode.ISOLATED, False),
-        ("gate", TradingMode.FUTURES, MarginMode.ISOLATED, False),
-        ("okx", TradingMode.FUTURES, MarginMode.ISOLATED, False),
+        ("binance", TradingMode.SPOT, None, False, False),
+        ("binance", TradingMode.MARGIN, MarginMode.ISOLATED, False, True),
+        ("kraken", TradingMode.SPOT, None, False, False),
+        ("kraken", TradingMode.MARGIN, MarginMode.ISOLATED, False, True),
+        ("kraken", TradingMode.FUTURES, MarginMode.ISOLATED, False, True),
+        ("bitmart", TradingMode.SPOT, None, False, False),
+        ("bitmart", TradingMode.MARGIN, MarginMode.CROSS, False, True),
+        ("bitmart", TradingMode.MARGIN, MarginMode.ISOLATED, False, True),
+        ("bitmart", TradingMode.FUTURES, MarginMode.CROSS, False, True),
+        ("bitmart", TradingMode.FUTURES, MarginMode.ISOLATED, False, True),
+        ("gate", TradingMode.MARGIN, MarginMode.ISOLATED, False, True),
+        ("okx", TradingMode.SPOT, None, False, False),
+        ("okx", TradingMode.MARGIN, MarginMode.CROSS, False, True),
+        ("okx", TradingMode.MARGIN, MarginMode.ISOLATED, False, True),
+        ("okx", TradingMode.FUTURES, MarginMode.CROSS, False, True),
+        ("binance", TradingMode.FUTURES, MarginMode.ISOLATED, False, False),
+        ("gate", TradingMode.FUTURES, MarginMode.ISOLATED, False, False),
+        ("okx", TradingMode.FUTURES, MarginMode.ISOLATED, False, False),
         # * Remove once implemented
-        ("binance", TradingMode.MARGIN, MarginMode.CROSS, True),
-        ("binance", TradingMode.FUTURES, MarginMode.CROSS, False),
-        ("kraken", TradingMode.MARGIN, MarginMode.CROSS, True),
-        ("kraken", TradingMode.FUTURES, MarginMode.CROSS, True),
-        ("gate", TradingMode.MARGIN, MarginMode.CROSS, True),
-        ("gate", TradingMode.FUTURES, MarginMode.CROSS, True),
+        ("binance", TradingMode.MARGIN, MarginMode.CROSS, False, True),
+        ("binance", TradingMode.FUTURES, MarginMode.CROSS, False, False),
+        ("binance", TradingMode.FUTURES, None, False, True),
+        # Validate without margin mode
+        ("binance", TradingMode.FUTURES, None, True, False),
+        ("kraken", TradingMode.MARGIN, MarginMode.CROSS, False, True),
+        ("kraken", TradingMode.FUTURES, MarginMode.CROSS, False, True),
+        ("gate", TradingMode.MARGIN, MarginMode.CROSS, False, True),
+        ("gate", TradingMode.FUTURES, MarginMode.CROSS, False, True),
         # * Uncomment once implemented
-        # ("binance", TradingMode.MARGIN, MarginMode.CROSS, False),
-        # ("binance", TradingMode.FUTURES, MarginMode.CROSS, False),
-        # ("kraken", TradingMode.MARGIN, MarginMode.CROSS, False),
-        # ("kraken", TradingMode.FUTURES, MarginMode.CROSS, False),
-        # ("gate", TradingMode.MARGIN, MarginMode.CROSS, False),
-        # ("gate", TradingMode.FUTURES, MarginMode.CROSS, False),
+        # ("binance", TradingMode.MARGIN, MarginMode.CROSS, False, False),
+        # ("binance", TradingMode.FUTURES, MarginMode.CROSS, False, False),
+        # ("kraken", TradingMode.MARGIN, MarginMode.CROSS, False, False),
+        # ("kraken", TradingMode.FUTURES, MarginMode.CROSS, False, False),
+        # ("gate", TradingMode.MARGIN, MarginMode.CROSS, False, False),
+        # ("gate", TradingMode.FUTURES, MarginMode.CROSS, False, False),
     ],
 )
 def test_validate_trading_mode_and_margin_mode(
-    default_conf, mocker, exchange_name, trading_mode, margin_mode, exception_thrown
+    default_conf,
+    mocker,
+    exchange_name,
+    trading_mode,
+    margin_mode,
+    allow_none_margin_mode,
+    exception_thrown,
 ):
     exchange = get_patched_exchange(
         mocker, default_conf, exchange=exchange_name, mock_supported_modes=False
     )
     if exception_thrown:
         with pytest.raises(OperationalException):
-            exchange.validate_trading_mode_and_margin_mode(trading_mode, margin_mode)
+            exchange.validate_trading_mode_and_margin_mode(
+                trading_mode, margin_mode, allow_none_margin_mode
+            )
     else:
-        exchange.validate_trading_mode_and_margin_mode(trading_mode, margin_mode)
+        exchange.validate_trading_mode_and_margin_mode(
+            trading_mode, margin_mode, allow_none_margin_mode
+        )
 
 
 @pytest.mark.parametrize(
@@ -5942,29 +5952,32 @@ def test_get_max_leverage_futures(default_conf, mocker, leverage_tiers):
     assert exchange.get_max_leverage("TIA/USDT:USDT", 130.008) == 40
 
 
-@pytest.mark.parametrize("exchange_name", ["binance", "kraken", "gate", "okx", "bybit"])
-def test__get_params(mocker, default_conf, exchange_name):
+@pytest.mark.parametrize(
+    "exchange_name, add_params_spot, add_params_futures",
+    [
+        ("binance", {}, {}),
+        ("kraken", {}, {"leverage": 3.0}),
+        ("gate", {}, {}),
+        ("okx", {}, {"tdMode": "isolated", "posSide": "net"}),
+        ("bybit", {}, {"position_idx": 0}),
+        ("bitget", {}, {"marginMode": "isolated"}),
+    ],
+)
+def test__get_params(mocker, default_conf, exchange_name, add_params_spot, add_params_futures):
     api_mock = MagicMock()
     mocker.patch(f"{EXMS}.exchange_has", return_value=True)
     exchange = get_patched_exchange(mocker, default_conf, api_mock, exchange=exchange_name)
     exchange._params = {"test": True}
 
     params1 = {"test": True}
-    params2 = {
+    params1.update(add_params_spot)
+
+    params_fut = {
         "test": True,
         "timeInForce": "IOC",
         "reduceOnly": True,
     }
-
-    if exchange_name == "kraken":
-        params2["leverage"] = 3.0
-
-    if exchange_name == "okx":
-        params2["tdMode"] = "isolated"
-        params2["posSide"] = "net"
-
-    if exchange_name == "bybit":
-        params2["position_idx"] = 0
+    params_fut.update(add_params_futures)
 
     assert (
         exchange._get_params(
@@ -6012,7 +6025,7 @@ def test__get_params(mocker, default_conf, exchange_name):
             time_in_force="IOC",
             leverage=3.0,
         )
-        == params2
+        == params_fut
     )
 
 
