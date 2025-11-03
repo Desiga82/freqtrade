@@ -7,5 +7,7 @@
         "ms-azuretools.vscode-docker",
         "vscode-icons-team.vscode-icons",
         "github.vscode-github-actions",
+        "hancel.google-translate",
+        "funkyremi.vscode-google-translate",
     ]
 }
