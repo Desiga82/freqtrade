@@ -1,0 +1,6 @@
+solie==9.2.1
+aiohttp==3.9.3
+
+numpy<2.3,>=1.24
+pandas>=2.2.2
+scipy>=1.14.0
