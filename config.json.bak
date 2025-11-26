@@ -1,0 +1,123 @@
+{
+  "$schema": "https://schema.freqtrade.io/schema.json",
+  "max_open_trades": 5,
+  "stake_currency": "USDT",
+  "stake_amount": 20,
+  "tradable_balance_ratio": 0.99,
+  "fiat_display_currency": "USD",
+  "timeframe": "15m",
+  "dry_run": false,
+  "short": true,
+  "cancel_open_orders_on_exit": false,
+
+  "unfilledtimeout": {
+    "entry": 10,
+    "exit": 30,
+    "exit_timeout_count": 0,
+    "unit": "minutes"
+  },
+
+  "entry_pricing": {
+    "price_side": "other",
+    "use_order_book": true,
+    "order_book_top": 1,
+    "price_last_balance": 0.0,
+    "check_depth_of_market": {
+      "enabled": false,
+      "bids_to_ask_delta": 1
+    }
+  },
+
+  "exit_pricing": {
+    "price_side": "other",
+    "use_order_book": true,
+    "order_book_top": 1
+  },
+
+  "dry_run_wallet": 1000,
+  "trading_mode": "futures",
+  "margin_mode": "isolated",
+  "exchange": {
+    "name": "binance",
+    "key": "ubTZpBcqoPPthcVEMhCGW3nVzbMkG2txudu50H0ChIJbktDPjGhkLGV7UHIgc249",
+    "secret": "gRbj1nNpYaklzpyia34IA7S3tPSGgVHiV5vjm0LhjHTuBZnBHvUZzniqZWerrruf",
+    "ccxt_config": {},
+    "ccxt_async_config": {},
+    "options": {
+      "defaultType": "future"
+    },
+    "type": "future"
+  },
+  "leverage": 5,
+  "pair_whitelist": [".*/USDT"],
+  "pair_blacklist": ["BNB/USDT"],
+
+  "pairlists": [
+    {
+      "method": "StaticPairList",
+      "pairs": [".*/USDT"],
+      "number_assets": 200,
+      "sort_key": "quoteVolume",
+      "lookback_days": 7,
+      "refresh_period": 86400
+    },   
+    { "method": "SpreadFilter",
+      "max_spread": 0.02
+  }  
+  ],
+
+  "pair_parameters": {
+    "SOL/USDT": { "leverage": 5 },
+    "ETH/USDT": { "leverage": 5 },
+    "BNB/USDT": { "leverage": 5 }
+  },
+
+  "order_types": {
+    "entry": "market",
+    "exit": "market",
+    "emergency_exit": "market",
+    "force_entry": "market",
+    "stoploss": "market",
+    "force_exit": "market",
+    "stoploss_on_exchange": true,
+    "trailing_stop_loss": true,
+     "use_custom_stoploss":false
+  },
+
+  "telegram": {
+    "enabled": true,
+    "token": "7212044447:AAEDgyAPVIdFg5cltb1TEFUM2VkYzVs_QaU",
+    "chat_id": "1042262874",
+    "allowed_telegram_user_ids": [1042262874],
+    "use_caption": true,
+    "notification_settings": {
+      "status": "on",
+      "entry": "on",
+      "exit": {
+        "roi": "on",
+        "stop_loss": "on",
+        "custom_exit": "on"
+      }
+    }
+  },
+
+  "api_server": {
+    "enabled": true,
+    "listen_ip_address": "127.0.0.1",
+    "listen_port": 8080,
+    "verbosity": "error",
+    "jwt_secret_key": "eed20dc8b80903e8f914ac6ce73a41738f2b2edfebed4fdc627a11cd1ff70be7",
+    "ws_token": "A8zdlUtn3FK4V6mFvypmORpNbYrrG40frg",
+    "CORS_origins": [],
+    "username": "freqtrader",
+    "password": "Joshi2012"
+  },
+
+  "bot_name": "freqtrade",
+  "initial_state": "running",
+  "force_entry_enable": false,
+
+  "internals": {
+    "process_throttle_secs": 5
+  }
+}
