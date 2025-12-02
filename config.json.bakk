@@ -6,13 +6,13 @@
   "tradable_balance_ratio": 0.99,
   "fiat_display_currency": "USD",
   "timeframe": "15m",
-  "dry_run": true,                    
+  "dry_run": true,
   "dry_run_wallet": 10000,
   "trading_mode": "futures",
   "margin_mode": "isolated",
-  "leverage": 3,                       
+  "leverage": 3,
 
-  "strategy": "ChandelierExitRSIATR",        
+  "strategy": "MACDZeroCrossStrategyPros6",
   "unfilledtimeout": {
     "entry": 2,
     "exit": 5,
@@ -43,28 +43,29 @@
     "pair_whitelist": [".*/USDT"],
     "pair_blacklist": [
       "BNB/USDT", "BUSD/USDT", "USDC/USDT", "TUSD/USDT",
-      ".*UP/USDT", ".*DOWN/USDT", ".*BEAR/USDT", ".*BULL/USDT"  
+      ".*UP/USDT", ".*DOWN/USDT", ".*BEAR/USDT", ".*BULL/USDT"
     ]
   },
 
   "pairlists": [
     {
       "method": "VolumePairList",
-      "number_assets": 300,                 
+      "number_assets": 300,
       "sort_key": "quoteVolume",
       "min_value": 1000000,
-      "refresh_period": 86400               
+      "refresh_period": 86400
     },
-
     {
       "method": "VolatilityFilter",
       "lookback_days": 10,
-      "min_volatility": 0.01
-    },
-
+      "min_volatility": 0.01,
+      "refresh_period": 21600,
+      "price_sample": "close"
+    },  
     {
-    "method": "SpreadFilter",
-    "max_spread": 0.005
+      "method": "SpreadFilter",
+      "max_spread": 0.005,
+      "use_instant_rates": true
     }
   ],
 
@@ -98,7 +99,7 @@
     "enable_openapi": true
   },
 
-  "bot_name": "BinanceFutures-Safe",
+  "bot_name": "BinanceFutures-Aggressive",
   "initial_state": "running",
   "force_entry_enable": false,
   "internals": {
