@@ -1,0 +1,110 @@
+{
+  "$schema": "https://schema.freqtrade.io/schema.json",
+  "max_open_trades": 5,
+  "stake_currency": "USDT",
+  "stake_amount": 25,
+  "tradable_balance_ratio": 0.99,
+  "fiat_display_currency": "USD",
+  "timeframe": "15m",
+  "dry_run": true,
+  "dry_run_wallet": 10000,
+  "trading_mode": "futures",
+  "margin_mode": "isolated",
+  "leverage": 3,
+
+  "strategy": "",
+  "unfilledtimeout": {
+    "entry": 2,
+    "exit": 5,
+    "exit_timeout_count": 0,
+    "unit": "minutes"
+  },
+
+  "entry_pricing": {
+    "price_side": "other",
+    "use_order_book": true,
+    "order_book_top": 1,
+    "price_last_balance": 0.0
+  },
+
+  "exit_pricing": {
+    "price_side": "other",
+    "use_order_book": true,
+    "order_book_top": 1
+  },
+
+  "exchange": {
+    "name": "binance",
+    "key": "",
+    "secret": "",
+    "ccxt_config": { "enableRateLimit": true },
+    "ccxt_async_config": { "enableRateLimit": true },
+    "options": { "defaultType": "future" },
+    "pair_whitelist": [".*/USDT"],
+    "pair_blacklist": [
+      "BNB/USDT", "BUSD/USDT", "USDC/USDT", "TUSD/USDT",
+      ".*UP/USDT", ".*DOWN/USDT", ".*BEAR/USDT", ".*BULL/USDT"
+    ]
+  },
+
+  "pairlists": [
+    {
+      "method": "VolumePairList",
+      "number_assets": 300,
+      "sort_key": "quoteVolume",
+      "min_value": 1000000,
+      "refresh_period": 86400
+    },
+    {
+      "method": "VolatilityFilter",
+      "lookback_days": 5,
+      "min_volatility": 0.01,
+      "max_volatility": 1.25,
+      "refresh_period": 21600,
+      "price_sample": "close",
+      "drop_nan": true
+    },
+    {
+      "method": "SpreadFilter",
+      "max_spread": 0.01,
+      "use_instant_rates": true
+    }
+  ],
+
+  "order_types": {
+    "entry": "market",
+    "exit": "market",
+    "emergency_exit": "market",
+    "force_entry": "market",
+    "stoploss": "market",
+    "stoploss_on_exchange": true,
+    "trailing_stop_loss": true
+  },
+
+  "telegram": {
+    "enabled": true,
+    "token": "",
+    "chat_id": "",
+    "allowed_telegram_user_ids": [],
+    "use_caption": true
+  },
+
+  "api_server": {
+    "enabled": true,
+    "listen_ip_address": "127.0.0.1",
+    "listen_port": 8080,
+    "verbosity": "error",
+    "jwt_secret_key": "",
+    "ws_token": "",
+    "username": "freqtrader",
+    "password": "",
+    "enable_openapi": true
+  },
+
+  "bot_name": "BinanceFutures-Aggressive",
+  "initial_state": "running",
+  "force_entry_enable": false,
+  "internals": {
+    "process_throttle_secs": 5
+  }
+}
