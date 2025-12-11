@@ -40,34 +40,17 @@
     "ccxt_config": { "enableRateLimit": true },
     "ccxt_async_config": { "enableRateLimit": true },
     "options": { "defaultType": "future" },
-    "pair_whitelist": [".*/USDT"],
-    "pair_blacklist": [
-      "BNB/USDT", "BUSD/USDT", "USDC/USDT", "TUSD/USDT",
-      ".*UP/USDT", ".*DOWN/USDT", ".*BEAR/USDT", ".*BULL/USDT"
+    "pair_whitelist": [
+      "BTC/USDT:USDT",
+      "ETH/USDT:USDT",
+      "AVAX/USDT:USDT",
+      "FHE/USDT:USDT"
     ]
   },
 
   "pairlists": [
     {
-      "method": "VolumePairList",
-      "number_assets": 300,
-      "sort_key": "quoteVolume",
-      "min_value": 1000000,
-      "refresh_period": 86400
-    },
-    {
-      "method": "VolatilityFilter",
-      "lookback_days": 10,
-      "min_volatility": 0.02,
-      "max_volatility": 0.6,
-      "refresh_period": 43200,
-      "price_sample": "close",
-      "drop_nan": true
-    },
-    {
-      "method": "SpreadFilter",
-      "max_spread": 0.003,
-      "use_instant_rates": true
+      "method": "StaticPairList"
     }
   ],
 
@@ -83,9 +66,9 @@
 
   "telegram": {
     "enabled": true,
-    "token": "",
-    "chat_id": "",
-    "allowed_telegram_user_ids": [],
+    "token": "7212044447:AAEDgyAPVIdFg5cltb1TEFUM2VkYzVs_QaU",
+    "chat_id": "1042262874",
+    "allowed_telegram_user_ids": [1042262874],
     "use_caption": true
   },
 
@@ -94,10 +77,10 @@
     "listen_ip_address": "127.0.0.1",
     "listen_port": 8080,
     "verbosity": "error",
-    "jwt_secret_key": "",
-    "ws_token": "",
+    "jwt_secret_key": "eed20dc8b80903e8f914ac6ce73a41738f2b2edfebed4fdc627a11cd1ff70be7",
+    "ws_token": "A8zdlUtn3FK4V6mFvypmORpNbYrrG40frg",
     "username": "freqtrader",
-    "password": "",
+    "password": "Joshi2012",
     "enable_openapi": true
   },
 
@@ -106,6 +89,32 @@
   "force_entry_enable": false,
   "internals": {
     "process_throttle_secs": 5
+  },
+
+  "freqai": {
+    "enabled": true,
+    "activate_tensorboard": false,
+    "purge_old_models": 2,
+    "train_period_days": 15,
+    "backtest_period_days": 30,
+    "identifier": "unique-id",
+    "feature_parameters": {
+      "include_timeframes": ["15m", "1h"],
+      "include_corr_pairlist": ["BTC/USDT", "ETH/USDT"],
+      "label_period_candles": 20,
+      "include_shifted_candles": 2,
+      "DI_threshold": 0.9,
+      "weight_factor": 0.9,
+      "principal_component_analysis": false,
+      "use_SVM_to_remove_outliers": true,
+      "indicator_periods_candles": [10, 20]
+    },
+    "data_split_parameters": {
+      "test_size": 0,
+      "random_state": 1
+    },
+    "model_training_parameters": {
+      "n_estimators": 800
+    }
   }
 }
-
