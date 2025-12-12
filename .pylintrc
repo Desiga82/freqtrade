@@ -7,3 +7,6 @@ ignore=vendor
 
 [TYPECHECK]
 ignored-modules=numpy,talib,talib.abstract
+
+[MESSAGES CONTROL]
+disable=W0613
