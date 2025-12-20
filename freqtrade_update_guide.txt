@@ -1,0 +1,25 @@
+# Freqtrade Update Guide
+
+## 1. Freqtrade Release Notes
+You can find the release notes at the following link:
+Link: https://github.com/freqtrade/freqtrade/releases
+
+## 2. Check Freqtrade Version
+To check the currently installed version of Freqtrade,
+run the following command in your terminal:
+
+freqtrade --version
+
+## 3. Devcontainer Configuration
+To ensure that your development environment pulls the latest version of Freqtrade, 
+add the following line to your Devcontainer configuration file:
+
+"initializeCommand": "docker pull freqtradeorg/freqtrade:develop_plot",
+
+## 4. Rebuild Container
+After updating the configuration, rebuild your development container by selecting:
+
+> Reopen Folder Locally
+> Rebuild and Reopen in Container
+
+
